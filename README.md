@@ -1,31 +1,60 @@
 # yahoo_ff
-package to obtain financial fundamental data for stocks
+Package to obtain financial fundamental data as well as price history for stocks. Creates
+database (using pickle) to be quickly used later. Loads/Saves data as Pandas DataFrame.
 
 ## Requirements
 ```
-pip install Quandl
+pip install python-dateutil Quandl pandas pickle
 ```
 
+## Installation
 ```
-pip install pandas
-```
-
-```
-pip install pickle
+$ pip install yahoo_ff
 ```
 
-## Steps
-```
-aapl = yahoo_ff('aapl')
-```
+## Using
 
-*aapl* will be an object from which the following DataFrames can be extracted:
+### A single stock
+```
+>>> from yahoo_ff.yahoo_ff import yahoo_ff
+>>> aapl = yahoo_ff('aapl')
+```
+will create an object from which several Pandas DataFrames of interest can be extracted
+```
+>>> aapl.incomestatement_annual
+>>> aapl.incomestatement_quarterly
+>>> aapl.balancesheet_annual
+>>> aapl.balancesheet_quarterly
+>>> aapl.cashflow_annual
+>>> aapl.cashflow_quarterly
+>>> aapl.pricehistory
+>>> aapl.infos
+```
+Note: *pricehistory* includes Open, High, Low, Close, Volume, Ex-Divident, Split Ratio, Adj.Open,
+ Adj.High, Adj.Low, Ajd.Close, Adj.Volume.
 
-for price history, volume and other...
+To simplify a bit further,
 ```
-aapl.pricehistory
+>>> aapl.package_sec_annually()
 ```
-for balancesheet, incomestatement, cashflow all in the same DataFrame:
+will return all annual data from the three SEC filings (incomestatement, balancesheet, cashflow)
+in one single DataFrame.
+
+### Create a database for a list of stocks  
+You can use it later quickly, or get it updated. If you have a list of stocks such as a file dbtest
+.csv
 ```
-aapl.package_sec_annually
+>>> from yahoo_ff.stocks_database import stocks_database
+>>> dbtest = stocks_database('dbtest')
 ```
+will create a folder named *dbtest_db* in the root directory with all the data stored as a pickle
+file. The object *dbtest* will now be available for you to access stocks stored in the database
+using the *take('aapl')* function as follows:
+```
+>>> dbtest.take('aapl').pricehistory
+```
+and all other data as described in section above.
+Note: *take('aapl')* returns None if stock does not exist in the database object.
+
+## Next updates:
+- Create an automatic updating flow of a database.
